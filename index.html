@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>사라진 생태계의 균형</title>
+
+  <style>
+    :root {
+      --green: #2e7d32;
+      --light-green: #e8f5e9;
+      --blue: #1565c0;
+      --light-blue: #e3f2fd;
+      --brown: #6d4c41;
+      --yellow: #fff8e1;
+      --red: #c62828;
+      --text: #263238;
+      --white: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, "Malgun Gothic", sans-serif;
+      color: var(--text);
+      background: linear-gradient(135deg, #e8f5e9, #e3f2fd);
+      min-height: 100vh;
+    }
+
+    .container {
+      width: min(1100px, 94%);
+      margin: 0 auto;
+      padding: 24px 0 48px;
+    }
+
+    header {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 28px;
+      text-align: center;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      color: var(--green);
+      font-size: clamp(1.8rem, 4vw, 3rem);
+    }
+
+    h2 {
+      margin-top: 0;
+      color: var(--green);
+    }
+
+    h3 {
+      color: var(--blue);
+    }
+
+    .subtitle {
+      margin: 0;
+      font-size: 1.05rem;
+    }
+
+    .game-info {
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    .info-box {
+      background: var(--light-green);
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-weight: bold;
+    }
+
+    #timer {
+      background: #ffecb3;
+    }
+
+    .progress-area {
+      background: var(--white);
+      padding: 18px;
+      border-radius: 16px;
+      margin-bottom: 20px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 18px;
+      background: #eceff1;
+      overflow: hidden;
+      border-radius: 20px;
+    }
+
+    #progressFill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #43a047, #1e88e5);
+      transition: width 0.4s ease;
+    }
+
+    .screen {
+      display: none;
+      background: rgba(255, 255, 255, 0.97);
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .story {
+      background: var(--yellow);
+      border-left: 6px solid #f9a825;
+      border-radius: 12px;
+      padding: 18px;
+      line-height: 1.7;
+      margin: 18px 0;
+    }
+
+    .message {
+      min-height: 28px;
+      margin: 15px 0;
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: bold;
+    }
+
+    .message.success {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    .message.error {
+      background: #ffebee;
+      color: var(--red);
+    }
+
+    .message.info {
+      background: #e3f2fd;
+      color: #1565c0;
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 12px 18px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      background: var(--green);
+      color: white;
+      transition: 0.2s;
+      margin: 5px;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.08);
+    }
+
+    button.secondary {
+      background: var(--blue);
+    }
+
+    button.warning {
+      background: #ef6c00;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+      transform: none;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin: 20px 0;
+    }
+
+    .choice-card {
+      min-height: 90px;
+      background: #fafafa;
+      border: 3px solid #cfd8dc;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .choice-card.selected {
+      border-color: var(--green);
+      background: var(--light-green);
+    }
+
+    .choice-card .emoji {
+      font-size: 2rem;
+    }
+
+    .category-area {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin: 22px 0;
+    }
+
+    .category {
+      border: 3px dashed #b0bec5;
+      border-radius: 14px;
+      padding: 14px;
+      min-height: 170px;
+      text-align: center;
+    }
+
+    .category h3 {
+      margin: 5px 0 12px;
+    }
+
+    .category .drop-list {
+      min-height: 95px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      color: #78909c;
+      font-size: 0.9rem;
+    }
+
+    .small-card {
+      border: 2px solid var(--green);
+      background: var(--light-green);
+      border-radius: 8px;
+      padding: 7px 10px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .small-card.used {
+      opacity: 0.35;
+      cursor: default;
+    }
+
+    .chain {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 25px 0;
+    }
+
+    .chain-item {
+      min-width: 100px;
+      padding: 16px 10px;
+      border: 3px solid #90caf9;
+      border-radius: 12px;
+      background: var(--light-blue);
+      text-align: center;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .chain-item.selected {
+      background: #bbdefb;
+      border-color: var(--blue);
+    }
+
+    .arrow {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: var(--blue);
+    }
+
+    .scenario {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin: 20px 0;
+    }
+
+    .scenario label {
+      display: block;
+      border: 2px solid #cfd8dc;
+      border-radius: 12px;
+      padding: 14px;
+      cursor: pointer;
+      line-height: 1.5;
+      background: #fafafa;
+    }
+
+    .scenario input {
+      margin-right: 8px;
+      transform: scale(1.2);
+    }
+
+    .code-box {
+      text-align: center;
+      background: #263238;
+      color: #ffffff;
+      border-radius: 14px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+
+    .code-box input {
+      width: 180px;
+      text-align: center;
+      font-size: 1.4rem;
+      padding: 10px;
+      border-radius: 8px;
+      border: 2px solid #90caf9;
+      letter-spacing: 5px;
+    }
+
+    .hint {
+      background: #f3e5f5;
+      border-left: 5px solid #8e24aa;
+      padding: 14px;
+      border-radius: 8px;
+      margin: 14px 0;
+    }
+
+    .final-card {
+      background: linear-gradient(135deg, #e8f5e9, #e3f2fd);
+      border: 3px solid var(--green);
+      border-radius: 18px;
+      padding: 25px;
+      line-height: 1.8;
+    }
+
+    .certificate {
+      border: 5px double #2e7d32;
+      background: #fffde7;
+      padding: 28px;
+      text-align: center;
+      border-radius: 12px;
+      margin-top: 20px;
+    }
+
+    .certificate h2 {
+      color: #2e7d32;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 700px) {
+      .category-area {
+        grid-template-columns: 1fr;
+      }
+
+      .screen {
+        padding: 20px;
+      }
+
+      .chain-item {
+        min-width: 85px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>사라진 생태계의 균형</h1>
+      <p class="subtitle">
+        숲과 바다에 숨겨진 단서를 찾아 생태계를 구해주세요!
+      </p>
+
+      <div class="game-info">
+        <div class="info-box">현재 단계: <span id="stageText">시작</span></div>
+        <div class="info-box" id="timer">남은 시간: 40:00</div>
+        <div class="info-box">힌트: <span id="hintCount">3</span>회</div>
+      </div>
+    </header>
+
+    <div class="progress-area">
+      <div class="progress-label">
+        <span>생태계 균형 회복 진행률</span>
+        <span id="progressText">0%</span>
+      </div>
+      <div class="progress-bar">
+        <div id="progressFill"></div>
+      </div>
+    </div>
+
+    <!-- 시작 화면 -->
+    <section id="startScreen" class="screen active">
+      <h2>연구소 긴급 메시지</h2>
+
+      <div class="story">
+        <strong>닥터 에코의 메시지</strong><br /><br />
+        생태계 균형 관측기가 갑자기 멈췄습니다.<br />
+        숲의 식물은 시들고, 바다의 물고기는 줄어들었으며,
+        죽은 생물과 낙엽은 계속 쌓이고 있습니다.<br /><br />
+        생산자, 소비자, 분해자의 역할을 조사하고
+        생태계 균형이 무너진 원인을 찾아 주세요.
+        제한 시간은 40분입니다.
+      </div>
+
+      <h3>게임 방법</h3>
+      <ul>
+        <li>모둠 친구들과 의논하며 문제를 해결합니다.</li>
+        <li>문제의 정답을 입력하면 다음 단계로 이동합니다.</li>
+        <li>힌트는 총 3번 사용할 수 있습니다.</li>
+        <li>모든 단계를 해결하면 생태계 구조대 인증서를 받습니다.</li>
+      </ul>
+
+      <button onclick="startGame()">게임 시작</button>
+    </section>
+
+    <!-- 1단계 -->
+    <section id="stage1" class="screen">
+      <h2>1단계: 생태계 구성 요소 분류</h2>
+
+      <div class="story">
+        연구소 안내실에 생물 카드가 흩어져 있습니다.
+        생물들을 생산자, 소비자, 분해자로 분류해야 첫 번째 단서를 얻을 수 있습니다.
+      </div>
+
+      <p>
+        아래 생물 카드를 클릭한 뒤 알맞은 분류 상자를 선택하세요.
+      </p>
+
+      <div id="cardArea" class="card-grid"></div>
+
+      <div class="category-area">
+        <div class="category">
+          <h3>생산자</h3>
+          <p>스스로 양분을 만드는 생물</p>
+          <div id="producerList" class="drop-list">카드를 선택하세요</div>
+        </div>
+
+        <div class="category">
+          <h3>소비자</h3>
+          <p>다른 생물을 먹는 생물</p>
+          <div id="consumerList" class="drop-list">카드를 선택하세요</div>
+        </div>
+
+        <div class="category">
+          <h3>분해자</h3>
+          <p>죽은 생물을 분해하는 생물</p>
+          <div id="decomposerList" class="drop-list">카드를 선택하세요</div>
+        </div>
+      </div>
+
+      <div id="stage1Message" class="message"></div>
+
+      <button onclick="classifyCard('producer')">생산자로 분류</button>
+      <button onclick="classifyCard('consumer')">소비자로 분류</button>
+      <button onclick="classifyCard('decomposer')">분해자로 분류</button>
+      <button class="warning" onclick="showHint(1)">힌트 보기</button>
+    </section>
+
+    <!-- 2단계 -->
+    <section id="stage2" class="screen">
+      <h2>2단계: 숲의 비밀 먹이 사슬</h2>
+
+      <div class="story">
+        숲에서 매가 줄어든 뒤 애벌레가 많아졌고,
+        참나무의 잎이 빠르게 줄었습니다.
+        올바른 먹이 사슬을 만들어 사건의 원인을 추리하세요.
+      </div>
+
+      <h3>참나무에서 매까지 먹이 사슬을 순서대로 클릭하세요.</h3>
+
+      <div id="forestCards" class="card-grid"></div>
+
+      <div class="chain" id="forestChain">
+        <span class="hint">아래 생물을 먹이 사슬 순서대로 선택하세요.</span>
+      </div>
+
+      <div id="stage2Message" class="message"></div>
+
+      <button onclick="checkForestChain()">먹이 사슬 확인</button>
+      <button class="warning" onclick="showHint(2)">힌트 보기</button>
+    </section>
+
+    <!-- 3단계 -->
+    <section id="stage3" class="screen">
+      <h2>3단계: 바다 탐정의 추리</h2>
+
+      <div class="story">
+        바다 식물이 줄어든 뒤 작은 물고기와 큰 물고기도 줄었습니다.
+        바다 생태계의 변화에 영향을 줄 수 있는 원인을 모두 찾아야 합니다.
+      </div>
+
+      <h3>바다 식물을 줄어들게 할 수 있는 원인을 모두 선택하세요.</h3>
+
+      <div class="scenario">
+        <label>
+          <input type="checkbox" value="pollution" />
+          바닷물 오염
+        </label>
+
+        <label>
+          <input type="checkbox" value="space" />
+          바다 식물이 자랄 공간 감소
+        </label>
+
+        <label>
+          <input type="checkbox" value="sunlight" />
+          햇빛이 바다에 도달하지 못함
+        </label>
+
+        <label>
+          <input type="checkbox" value="shark" />
+          상어가 많아짐
+        </label>
+
+        <label>
+          <input type="checkbox" value="clean" />
+          바닷물을 깨끗하게 관리함
+        </label>
+      </div>
+
+      <div id="stage3Message" class="message"></div>
+
+      <button onclick="checkOceanProblem()">추리 결과 제출</button>
+      <button class="warning" onclick="showHint(3)">힌트 보기</button>
+    </section>
+
+    <!-- 4단계 -->
+    <section id="stage4" class="screen">
+      <h2>4단계: 분해자의 방</h2>
+
+      <div class="story">
+        숲 바닥에 낙엽과 죽은 생물이 계속 쌓이고 있습니다.
+        분해자의 역할을 알아내고 물질의 순환 과정을 완성하세요.
+      </div>
+
+      <h3>분해 과정을 올바른 순서로 배열하세요.</h3>
+
+      <div id="decompCards" class="card-grid"></div>
+
+      <div class="chain" id="decompChain">
+        <span class="hint">아래 카드를 순서대로 선택하세요.</span>
+      </div>
+
+      <div id="stage4Message" class="message"></div>
+
+      <button onclick="checkDecomposition()">순서 확인</button>
+      <button class="warning" onclick="useDecompHint()">힌트 보기</button>
+    </section>
+
+    <!-- 5단계 -->
+    <section id="stage5" class="screen">
+      <h2>5단계: 생태계 균형 관측기</h2>
+
+      <div class="story">
+        지금까지 모은 단서는 다음과 같습니다.
+        생산자, 소비자, 분해자는 서로 연결되어 있으며,
+        한 생물의 변화는 다른 생물에게도 영향을 줍니다.
+      </div>
+
+      <div class="final-card">
+        <h3>최종 질문</h3>
+        <p>
+          생태계의 균형을 지키기 위해 반드시 필요한 설명을 고르세요.
+        </p>
+
+        <div class="scenario">
+          <label>
+            <input type="radio" name="finalAnswer" value="wrong1" />
+            생태계에서는 식물만 중요하고 다른 생물은 없어도 된다.
+          </label>
+
+          <label>
+            <input type="radio" name="finalAnswer" value="wrong2" />
+            생물의 수가 변해도 다른 생물에게는 영향을 주지 않는다.
+          </label>
+
+          <label>
+            <input type="radio" name="finalAnswer" value="correct" />
+            생산자, 소비자, 분해자는 서로 연결되어 있어
+            생태계의 균형을 함께 유지한다.
+          </label>
+        </div>
+      </div>
+
+      <div class="code-box">
+        <p>최종 암호를 입력하세요.</p>
+        <p>힌트: 생태계를 건강하게 유지하는 핵심 단어입니다.</p>
+        <input id="finalCode" type="text" maxlength="4" placeholder="암호" />
+        <br />
+        <button onclick="finishGame()">최종 암호 확인</button>
+      </div>
+
+      <div id="stage5Message" class="message"></div>
+    </section>
+
+    <!-- 완료 화면 -->
+    <section id="finishScreen" class="screen">
+      <h2>생태계 균형 회복 성공!</h2>
+
+      <div class="certificate">
+        <h2>생태계 구조대 인증서</h2>
+        <p>
+          여러분은 생산자, 소비자, 분해자의 역할을 이해하고
+          생태계 균형을 회복했습니다.
+        </p>
+        <p>
+          생태계의 모든 생물은 서로 연결되어 있습니다.
+          한 생물의 변화는 다른 생물에게 영향을 줍니다.
+        </p>
+        <p><strong>핵심 개념: 생산자 · 소비자 · 분해자 · 균형</strong></p>
+        <p id="finalTime"></p>
+      </div>
+
+      <button onclick="restartGame()">다시 하기</button>
+      <button onclick="window.print()">인증서 인쇄</button>
+    </section>
+  </div>
+
+  <script>
+    const TOTAL_TIME = 40 * 60;
+
+    let currentStage = 0;
+    let remainingTime = TOTAL_TIME;
+    let timerId = null;
+    let hintCount = 3;
+    let selectedCard = null;
+    let forestSequence = [];
+    let decompositionSequence = [];
+
+    const stages = [
+      "시작",
+      "생태계 분류",
+      "숲 생태계",
+      "바다 생태계",
+      "분해자의 방",
+      "균형 관측실",
+      "완료"
+    ];
+
+    const organisms = [
+      { name: "소나무", emoji: "🌲", type: "producer" },
+      { name: "민들레", emoji: "🌼", type: "producer" },
+      { name: "다시마", emoji: "🌿", type: "producer" },
+      { name: "토끼", emoji: "🐇", type: "consumer" },
+      { name: "사슴", emoji: "🦌", type: "consumer" },
+      { name: "독수리", emoji: "🦅", type: "consumer" },
+      { name: "물고기", emoji: "🐟", type: "consumer" },
+      { name: "버섯", emoji: "🍄", type: "decomposer" },
+      { name: "지렁이", emoji: "🪱", type: "decomposer" },
+      { name: "세균", emoji: "🦠", type: "decomposer" }
+    ];
+
+    const forestOrganisms = [
+      { name: "참나무", emoji: "🌳" },
+      { name: "애벌레", emoji: "🐛" },
+      { name: "참새", emoji: "🐦" },
+      { name: "매", emoji: "🦅" }
+    ];
+
+    const decompositionCards = [
+      { id: "dead", text: "식물이나 동물이 죽는다." },
+      { id: "decompose", text: "버섯과 세균이 죽은 생물을 분해한다." },
+      { id: "nutrient", text: "흙 속에 영양분이 생긴다." },
+      { id: "grow", text: "식물이 영양분을 이용해 다시 자란다." }
+    ];
+
+    function $(id) {
+      return document.getElementById(id);
+    }
+
+    function showScreen(id) {
+      document.querySelectorAll(".screen").forEach(screen => {
+        screen.classList.remove("active");
+      });
+
+      $(id).classList.add("active");
+    }
+
+    function updateProgress() {
+      const progress = Math.round((currentStage / 5) * 100);
+      $("progressFill").style.width = `${progress}%`;
+      $("progressText").textContent = `${progress}%`;
+      $("stageText").textContent = stages[currentStage];
+    }
+
+    function updateTimer() {
+      const minutes = Math.floor(remainingTime / 60);
+      const seconds = remainingTime % 60;
+
+      $("timer").textContent =
+        `남은 시간: ${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+
+      if (remainingTime <= 60) {
+        $("timer").style.background = "#ffcdd2";
+        $("timer").style.color = "#b71c1c";
+      }
+
+      if (remainingTime <= 0) {
+        clearInterval(timerId);
+        alert("시간이 끝났습니다. 선생님과 함께 다시 도전해 보세요.");
+      }
+    }
+
+    function startTimer() {
+      clearInterval(timerId);
+
+      timerId = setInterval(() => {
+        remainingTime--;
+        updateTimer();
+
+        if (remainingTime <= 0) {
+          clearInterval(timerId);
+        }
+      }, 1000);
+    }
+
+    function startGame() {
+      currentStage = 1;
+      remainingTime = TOTAL_TIME;
+      hintCount = 3;
+      updateProgress();
+      updateTimer();
+      $("hintCount").textContent = hintCount;
+      showScreen("stage1");
+      renderOrganismCards();
+      startTimer();
+    }
+
+    function renderOrganismCards() {
+      const area = $("cardArea");
+      area.innerHTML = "";
+
+      organisms.forEach((organism, index) => {
+        const button = document.createElement("button");
+        button.className = "choice-card";
+        button.dataset.index = index;
+
+        button.innerHTML = `
+          <span class="emoji">${organism.emoji}</span>
+          <span>${organism.name}</span>
+        `;
+
+        button.addEventListener("click", () => {
+          document
+            .querySelectorAll("#cardArea .choice-card")
+            .forEach(card => card.classList.remove("selected"));
+
+          button.classList.add("selected");
+          selectedCard = organism;
+        });
+
+        area.appendChild(button);
+      });
+    }
+
+    function classifyCard(type) {
+      const message = $("stage1Message");
+
+      if (!selectedCard) {
+        setMessage(message, "먼저 생물 카드를 하나 선택하세요.", "error");
+        return;
+      }
+
+      if (selectedCard.type !== type) {
+        setMessage(
+          message,
+          `${selectedCard.name}의 역할을 다시 생각해 보세요.`,
+          "error"
+        );
+        return;
+      }
+
+      const listId = `${type}List`;
+      const list = $(listId);
+
+      const card = document.createElement("span");
+      card.className = "small-card";
+      card.textContent = `${selectedCard.emoji} ${selectedCard.name}`;
+      list.textContent = "";
+      list.appendChild(card);
+
+      const selectedButton = document.querySelector(
+        `#cardArea .choice-card[data-index="${organisms.indexOf(selectedCard)}"]`
+      );
+
+      if (selectedButton) {
+        selectedButton.disabled = true;
+        selectedButton.classList.remove("selected");
+        selectedButton.style.display = "none";
+      }
+
+      setMessage(message, `${selectedCard.name}을(를) 올바르게 분류했습니다.`, "success");
+      selectedCard = null;
+
+      const remaining = document.querySelectorAll(
+        "#cardArea .choice-card:not([disabled])"
+      ).length;
+
+      if (remaining === 0) {
+        setTimeout(() => {
+          currentStage = 2;
+          updateProgress();
+          showScreen("stage2");
+          renderForestCards();
+        }, 900);
+      }
+    }
+
+    function renderForestCards() {
+      const area = $("forestCards");
+      area.innerHTML = "";
+      forestSequence = [];
+      $("forestChain").innerHTML =
+        `<span class="hint">아래 생물을 먹이 사슬 순서대로 선택하세요.</span>`;
+
+      const shuffled = [...forestOrganisms].sort(() => Math.random() - 0.5);
+
+      shuffled.forEach(organism => {
+        const button = document.createElement("button");
+        button.className = "choice-card";
+        button.innerHTML = `
+          <span class="emoji">${organism.emoji}</span>
+          <span>${organism.name}</span>
+        `;
+
+        button.addEventListener("click", () => {
+          if (button.disabled) return;
+
+          forestSequence.push(organism.name);
+          button.disabled = true;
+          button.style.opacity = "0.4";
+
+          const item = document.createElement("span");
+          item.className = "chain-item";
+          item.textContent = `${organism.emoji} ${organism.name}`;
+          $("forestChain").appendChild(item);
+        });
+
+        area.appendChild(button);
+      });
+    }
+
+    function checkForestChain() {
+      const correct = ["참나무", "애벌레", "참새", "매"];
+      const message = $("stage2Message");
+
+      if (JSON.stringify(forestSequence) !== JSON.stringify(correct)) {
+        setMessage(
+          message,
+          "먹이 사슬의 순서가 맞지 않습니다. 누가 누구를 먹는지 생각해 보세요.",
+          "error"
+        );
+        return;
+      }
+
+      setMessage(
+        message,
+        "정답입니다! 매가 줄면 애벌레가 많아지고 참나무 잎이 줄어들 수 있습니다.",
+        "success"
+      );
+
+      setTimeout(() => {
+        currentStage = 3;
+        updateProgress();
+        showScreen("stage3");
+      }, 1300);
+    }
+
+    function checkOceanProblem() {
+      const selected = Array.from(
+        document.querySelectorAll("#stage3 input[type='checkbox']:checked")
+      ).map(input => input.value);
+
+      const correct = ["pollution", "space", "sunlight"].sort();
+      const answer = [...selected].sort();
+      const message = $("stage3Message");
+
+      if (JSON.stringify(answer) !== JSON.stringify(correct)) {
+        setMessage(
+          message,
+          "정답이 아닙니다. 생산자인 바다 식물이 자라려면 무엇이 필요할까요?",
+          "error"
+        );
+        return;
+      }
+
+      setMessage(
+        message,
+        "정답입니다! 바다 식물이 줄면 이를 먹는 소비자도 영향을 받습니다.",
+        "success"
+      );
+
+      setTimeout(() => {
+        currentStage = 4;
+        updateProgress();
+        showScreen("stage4");
+        renderDecompositionCards();
+      }, 1300);
+    }
+
+    function renderDecompositionCards() {
+      const area = $("decompCards");
+      area.innerHTML = "";
+      decompositionSequence = [];
+      $("decompChain").innerHTML =
+        `<span class="hint">아래 카드를 순서대로 선택하세요.</span>`;
+
+      const shuffled = [...decompositionCards].sort(() => Math.random() - 0.5);
+
+      shuffled.forEach(cardData => {
+        const button = document.createElement("button");
+        button.className = "choice-card";
+        button.textContent = cardData.text;
+
+        button.addEventListener("click", () => {
+          if (button.disabled) return;
+
+          decompositionSequence.push(cardData.id);
+          button.disabled = true;
+          button.style.opacity = "0.4";
+
+          const item = document.createElement("span");
+          item.className = "chain-item";
+          item.textContent = `${decompositionSequence.length}. ${cardData.text}`;
+          $("decompChain").appendChild(item);
+        });
+
+        area.appendChild(button);
+      });
+    }
+
+    function checkDecomposition() {
+      const correct = ["dead", "decompose", "nutrient", "grow"];
+      const message = $("stage4Message");
+
+      if (
+        JSON.stringify(decompositionSequence) !==
+        JSON.stringify(correct)
+      ) {
+        setMessage(
+          message,
+          "분해 과정을 다시 생각해 보세요. 죽은 생물은 무엇을 거쳐 영양분이 될까요?",
+          "error"
+        );
+        return;
+      }
+
+      setMessage(
+        message,
+        "정답입니다! 분해자는 물질이 생태계 안에서 순환하도록 돕습니다.",
+        "success"
+      );
+
+      setTimeout(() => {
+        currentStage = 5;
+        updateProgress();
+        showScreen("stage5");
+      }, 1300);
+    }
+
+    function finishGame() {
+      const answer = document.querySelector(
+        "input[name='finalAnswer']:checked"
+      );
+      const code = $("finalCode").value.trim();
+      const message = $("stage5Message");
+
+      if (!answer || answer.value !== "correct") {
+        setMessage(
+          message,
+          "먼저 생태계 균형에 관한 올바른 설명을 선택하세요.",
+          "error"
+        );
+        return;
+      }
+
+      if (code !== "균형") {
+        setMessage(
+          message,
+          "암호가 맞지 않습니다. 생태계를 건강하게 유지하는 핵심 단어를 생각해 보세요.",
+          "error"
+        );
+        return;
+      }
+
+      clearInterval(timerId);
+      currentStage = 6;
+      updateProgress();
+      $("finalTime").textContent =
+        `남은 시간: ${formatTime(remainingTime)}`;
+      showScreen("finishScreen");
+    }
+
+    function showHint(stage) {
+      if (hintCount <= 0) {
+        alert("사용할 수 있는 힌트가 없습니다.");
+        return;
+      }
+
+      hintCount--;
+      $("hintCount").textContent = hintCount;
+
+      const hints = {
+        1: "힌트: 햇빛을 이용해 양분을 만드는 생물은 생산자입니다. 다른 생물을 먹는 생물은 소비자입니다.",
+        2: "힌트: 참나무의 잎을 먹는 생물부터 시작하여, 차례로 그것을 먹는 생물을 연결하세요.",
+        3: "힌트: 바다 식물은 생산자입니다. 햇빛, 깨끗한 물, 자랄 공간이 필요합니다."
+      };
+
+      alert(hints[stage]);
+    }
+
+    function useDecompHint() {
+      if (hintCount <= 0) {
+        alert("사용할 수 있는 힌트가 없습니다.");
+        return;
+      }
+
+      hintCount--;
+      $("hintCount").textContent = hintCount;
+
+      alert(
+        "힌트: 죽은 생물이 먼저 생기고, 분해자가 그것을 분해합니다. 그 결과 흙 속에 영양분이 생깁니다."
+      );
+    }
+
+    function setMessage(element, text, type) {
+      element.textContent = text;
+      element.className = `message ${type}`;
+    }
+
+    function formatTime(seconds) {
+      const minutes = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+    }
+
+    function restartGame() {
+      location.reload();
+    }
+  </script>
+</body>
+</html>
